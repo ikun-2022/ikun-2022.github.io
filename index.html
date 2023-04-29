@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <title>悦听player</title>
+  <!-- 样式 -->
+  <link rel="stylesheet" href="./css/index.css">
+</head>
+
+<body>
+  <div class="wrap">
+    <!-- 播放器主体区域 -->
+    <div class="play_wrap" id="player">
+      <div class="search_bar">
+        <img src="images/player_title.png" alt="" />
+        <!-- 搜索歌曲 -->
+        <input type="text" autocomplete="off" v-model="query" @keyup.enter="searchMusic"/>    <!-- v-model双向绑定,即前台输入关联字后点回车,那么query就等于关键字 -->
+      </div>
+      <div class="center_con">
+        <!-- 搜索歌曲列表 -->
+        <div class='song_wrapper'>
+          <ul class="song_list">
+            <li v-for="item in musicList">             <!-- 对歌曲列表遍历写入li标签 -->
+              <a href="javascript:;" @click="playMusic(item.id)"></a>   <!-- 点击播放歌曲,把item.id传给后台找到对应歌曲播放地址 -->
+              <b>{{item.name}}</b> 
+              <span v-if="item.mvid!=0" @click="playMv(item.mvid)"><i></i></span>  <!-- 点击播放mv,前提是item.mvid不为0,把item.mvid不传给后台找到对应MV播放地址 -->
+            </li>
+          </ul>
+          <img src="images/line.png" class="switch_btn" alt="">
+        </div>
+        <!-- 歌曲信息容器 -->
+        <div class="player_con" :class="{playing:isPlaying}">
+          <img src="images/player_bar.png" class="play_bar" />
+          <!-- 黑胶碟片 -->
+          <img src="images/disc.png" class="disc autoRotate" />
+          <img :src="musicPic" class="cover autoRotate" />    <!-- 获取歌曲封面,并用v-bind绑定数据,一般绑定src属性的都用v-bind,因为src属性无需由用户输入,所以不用v-model -->
+        </div>
+        <!-- 评论容器 -->
+        <div class="comment_wrapper">
+          <h5 class='title'>热门留言</h5>
+          <div class='comment_list'>
+            <dl v-for="item in hotComments">                      <!-- 对歌曲热评遍历写入dl标签 -->
+              <dt><img :src="item.user.avatarUrl" alt=""></dt>    <!-- 热评作者头像 -->
+              <dd class="name">{{item.user.nickname}}</dd>        <!-- 热评作者名称 -->
+              <dd class="detail">{{item.content}}</dd>            <!-- 热评作者评论 -->
+            </dl>
+          </div>
+          <img src="images/line.png" class="right_line">
+        </div>
+      </div>
+      <div class="audio_con">
+        <audio @play="play" @pause="pause" :src="musicUrl" ref='audio' controls autoplay loop class="myaudio"></audio>  
+      </div>  <!-- v-bind指令绑定歌曲播放地址,点击播放时执行play方法,暂时执行pause方法 -->
+      <div class="video_con" v-show="isShow" style="display: none;">  <!-- 是否展示MV播放界面的遮罩层,为真则展示,默认不展示 -->
+        <video :src="mvUrl" controls="controls"></video>  <!-- v-bind指令绑定歌曲播放地址 -->
+        <div class="mask" @click="close"></div>           <!-- 点击MV播放界面以外的页面则关闭MV且关闭MV播放界面 -->
+      </div>
+    </div>
+  </div>
+  <!-- 开发环境版本，包含了有帮助的命令行警告 -->
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <!-- 官网提供的 axios 在线地址 -->
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <script src="./js/main.js"></script>
+</body>
+
+</html>
